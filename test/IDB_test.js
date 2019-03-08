@@ -14,7 +14,7 @@ contract("IDB", accounts => {
       let nome = "Maykon Deykon";
       let dtNascimento = "14/03/1981";
       
-      let pessoaInserida = await instance.setPessoa(nome, dtNascimento);
+      let pessoaInserida = await instance.addPessoa(nome, dtNascimento);
       let pessoaRecuperada = await instance.getPessoa(owner);
 
       assert.equal(pessoaRecuperada.nome, nome);

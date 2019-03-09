@@ -36,9 +36,23 @@ contract IDB {
         p.documentos[p.numDocumentos++] = Documento({tipo: _tipo, ipfsHash: _ipfsHash, numDetalhes: 0});
     }
 
-    function addDetalhe(address _addr, uint _numDoumento, string memory _chave, string memory _valor) public {
+    function getDocumento(address _addr, uint _numDocumento) public view returns(string memory tipo, string memory ipfsHash, uint numDetalhes) {
         Pessoa storage p = pessoas[_addr];
-        Documento storage d = p.documentos[_numDoumento];
+        Documento storage d = p.documentos[_numDocumento];
+        return (d.tipo, d.ipfsHash, d.numDetalhes);
+    }
+
+    function addDetalhe(address _addr, uint _numDocumento, string memory _chave, string memory _valor) public {
+        Pessoa storage p = pessoas[_addr];
+        Documento storage d = p.documentos[_numDocumento];
         d.detalhes[d.numDetalhes++] = Detalhe({chave: _chave, valor: _valor});
+    }
+
+    function getDetalhe(address _addr, uint _numDocumento, uint _numDetalhe) public view returns(string memory chave, string memory valor) {
+        Pessoa storage p = pessoas[_addr];
+        Documento storage d = p.documentos[_numDocumento];
+        Detalhe storage dt = d.detalhes[_numDetalhe];
+
+        return (dt.chave, dt.valor);
     }
 }

@@ -13,12 +13,14 @@ contract IDB {
         string tipo;
         string ipfsHash;
         uint numDetalhes;
+        bool excluido;
         mapping(uint => Detalhe) detalhes;
     }
 
     struct Detalhe{
         string chave;
         string valor;
+        bool excluido;
     }
 
     mapping(address => Pessoa) public pessoas;
@@ -33,26 +35,33 @@ contract IDB {
     
     function addDocumento(address _addr, string memory _tipo, string memory _ipfsHash) public {
         Pessoa storage p = pessoas[_addr];
-        p.documentos[p.numDocumentos++] = Documento({tipo: _tipo, ipfsHash: _ipfsHash, numDetalhes: 0});
+        p.documentos[p.numDocumentos++] = Documento({tipo: _tipo, ipfsHash: _ipfsHash, numDetalhes: 0, excluido: false});
     }
 
-    function getDocumento(address _addr, uint _numDocumento) public view returns(string memory tipo, string memory ipfsHash, uint numDetalhes) {
+    function getDocumento(address _addr, uint _numDocumento) public view returns(string memory tipo, string memory ipfsHash, uint numDetalhes, bool excluido) {
         Pessoa storage p = pessoas[_addr];
         Documento storage d = p.documentos[_numDocumento];
-        return (d.tipo, d.ipfsHash, d.numDetalhes);
+        return (d.tipo, d.ipfsHash, d.numDetalhes, d.excluido);
+    }
+
+    function excluiDocumento(address _addr, uint _numDocumento) public returns (bool retorno) {
+        Pessoa storage p = pessoas[_addr];
+        Documento storage d = p.documentos[_numDocumento];
+        d.excluido = true;
+        return (d.excluido);
     }
 
     function addDetalhe(address _addr, uint _numDocumento, string memory _chave, string memory _valor) public {
         Pessoa storage p = pessoas[_addr];
         Documento storage d = p.documentos[_numDocumento];
-        d.detalhes[d.numDetalhes++] = Detalhe({chave: _chave, valor: _valor});
+        d.detalhes[d.numDetalhes++] = Detalhe({chave: _chave, valor: _valor, excluido: false});
     }
 
-    function getDetalhe(address _addr, uint _numDocumento, uint _numDetalhe) public view returns(string memory chave, string memory valor) {
+    function getDetalhe(address _addr, uint _numDocumento, uint _numDetalhe) public view returns(string memory chave, string memory valor, bool excluido) {
         Pessoa storage p = pessoas[_addr];
         Documento storage d = p.documentos[_numDocumento];
         Detalhe storage dt = d.detalhes[_numDetalhe];
 
-        return (dt.chave, dt.valor);
+        return (dt.chave, dt.valor, dt.excluido);
     }
 }
